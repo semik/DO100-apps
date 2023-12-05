@@ -1,5 +1,6 @@
 var express = require('express'),
   app = express();
+const util = require('util');
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
   ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -17,14 +18,15 @@ route.get('/', function (req, res) {
 
 // A route that returns readiness status
 route.get('/ready', function (req, res) {
-  var now = Math.floor(Date.now() / 1000);
+  var now = Date.now() / 1000.0;
   var lapsed = now - started;
+  var lapsedInt = now - started;
   if (ready && (lapsed > 30)) {
-    console.log('ping /ready => pong [ready]');
+    console.log(lapsed.toFixed(2) + ': ping /ready => pong [ready]');
     res.send('Ready for service requests...\n');
   }
   else {
-    console.log('ping /ready => pong [notready]');
+    console.log(lapsed.toFixed(2) + ': ping /ready => pong [notready]');
     res.status(503);
     res.send('Error! Service not ready for requests...\n');
   }
@@ -32,12 +34,14 @@ route.get('/ready', function (req, res) {
 
 // A route that returns health status
 route.get('/healthz', function (req, res) {
+  var now = Date.now() / 1000.0;
+  var lapsed = now - started;
   if (healthy) {
-    console.log('ping /healthz => pong [healthy]');
+    console.log(lapsed.toFixed(2) + ': ping /healthz => pong [healthy]');
     res.send('OK\n');
   }
   else {
-    console.log('ping /healthz => pong [unhealthy]');
+    console.log(lapsed.toFixed(2) + ': ping /healthz => pong [unhealthy]');
     res.status(503);
     res.send('Error! App not healthy!\n');
   }
@@ -69,6 +73,6 @@ route.route('/flip').get(function (req, res) {
 
 app.listen(port, ip);
 console.log('nodejs server running on http://%s:%s', ip, port);
-var started = Math.floor(Date.now() / 1000);
+var started = Date.now() / 1000.0;
 
 module.exports = app;

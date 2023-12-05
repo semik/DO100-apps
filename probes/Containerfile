@@ -1,8 +1,9 @@
-FROM registry.access.redhat.com/ubi8/nodejs-14:1
+FROM registry.access.redhat.com/ubi8/nodejs-16:1
 
 COPY . /opt/app-root/src/
 
-RUN cd /opt/app-root/src && \
+RUN ls -lr /opt/app-root/src && \
+    cd /opt/app-root/src && \
     npm install
 
 EXPOSE 8080
