@@ -13,14 +13,30 @@ app.use('/', route);
 
 // A route that says hello
 route.get('/', function (req, res) {
+  var now = Date.now() / 1000.0;
+  var lapsed = now - started;
+  console.log(lapsed.toFixed(2) + ': serving user request');
   res.send('Hello! This is the index page for the app.\n');
 });
 
 // A route that returns readiness status
+route.get('/startup', function (req, res) {
+  var now = Date.now() / 1000.0;
+  var lapsed = now - started;
+  if (ready && (lapsed > 30)) {
+    console.log(lapsed.toFixed(2) + ': ping /startup => pong [ready]');
+    res.send('Ready for service requests...\n');
+  }
+  else {
+    console.log(lapsed.toFixed(2) + ': ping /startup => pong [notready]');
+    res.status(503);
+    res.send('Error! Service not ready for requests...\n');
+  }
+});
+
 route.get('/ready', function (req, res) {
   var now = Date.now() / 1000.0;
   var lapsed = now - started;
-  var lapsedInt = now - started;
   if (ready && (lapsed > 30)) {
     console.log(lapsed.toFixed(2) + ': ping /ready => pong [ready]');
     res.send('Ready for service requests...\n');
